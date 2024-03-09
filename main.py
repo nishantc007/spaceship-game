@@ -26,12 +26,13 @@ position_alien_y = 300
 spaceship_rectangle = spaceship_image.get_rect()
 missile_rectangle = missile_image.get_rect()
 alien_rectangle = alien_image.get_rect()
+
 user_points = 20
 font = pygame.font.SysFont("font/PixelGameFont.fft",50)
-def respawn():
-    x_pos = 1400
-    y_pos = random.randint(100,600)
-    return [x_pos,y_pos]
+def alien_respawn():
+    alien_pos_x = 1400
+    alien_pos_y = random.randint(100,600)
+    return [alien_pos_x,alien_pos_y]
 
 def missile_respawn():
     triggered = False
@@ -40,17 +41,23 @@ def missile_respawn():
     position_missile_y = position_spaceship_y
     return[triggered,missile_speed,position_missile_x,position_missile_y] 
 
-def collisions():
+def crash():
     global user_points
     if spaceship_rectangle.colliderect(alien_rectangle) :
         user_points = user_points - 1
         return True
-    elif missile_rectangle.colliderect(alien_rectangle):
+    else:
+        return False
+
+def hitting_alien():
+    global user_points
+    if missile_rectangle.colliderect(alien_rectangle):
         user_points = user_points + 1 
         return True
     else:
         return False
-    
+
+
 run = True
 while run:
     for event in pygame.event.get():
@@ -76,9 +83,9 @@ while run:
     position_missile_x = position_missile_x + missile_speed
 
    
-    # pygame.draw.rect(screen,"red",spaceship_rectangle,3)
-    # pygame.draw.rect(screen, "red", missile_rectangle,3 )
-
+    pygame.draw.rect(screen,"red",spaceship_rectangle,3)
+    pygame.draw.rect(screen, "red", missile_rectangle,3 )
+    pygame.draw.rect(screen, "red", alien_rectangle,3 )
     score = font.render(f' Points: {int(user_points)}',True,"red")
   
     key = pygame.key.get_pressed()
@@ -99,17 +106,31 @@ while run:
     if position_missile_x > 1300:
         triggered,missile_speed,position_missile_x,position_missile_y = missile_respawn()
 
-    if position_alien_x <= -100 or collisions(): 
-        position_alien_x = respawn()[0]
-        position_alien_y = respawn()[1]
-        # user_points = user_points - 1
+    if position_alien_x <= -300: 
+        position_alien_x = alien_respawn()[0]
+        position_alien_y = alien_respawn()[1]
+        user_points = user_points - 1
     if user_points == 0:
         run = False
+    
+    # if crash():
+    #     user_points = user_points - 1
+
+    # if hitting_alien():
+    #     user_points = user_points + 1
+    
+    spaceship_rectangle.x = position_spaceship_x
+    spaceship_rectangle.y = position_spaceship_y
+    missile_rectangle.x = position_missile_x
+    missile_rectangle.y = position_missile_y
+    alien_rectangle.x = position_alien_x
+    alien_rectangle.y = position_alien_y
 
     screen.blit(missile_image,(position_missile_x,position_missile_y))
     screen.blit(spaceship_image,(position_spaceship_x,position_spaceship_y))
     screen.blit(alien_image,(position_alien_x,position_alien_y))
     screen.blit(score,(0,0))
+ 
 
 
     pygame.display.update()
