@@ -27,7 +27,8 @@ spaceship_rectangle = spaceship_image.get_rect()
 missile_rectangle = missile_image.get_rect()
 alien_rectangle = alien_image.get_rect()
 
-user_points = 20
+lives_left = 10
+points = 0
 font = pygame.font.SysFont("font/PixelGameFont.fft",50)
 def alien_respawn():
     alien_pos_x = 1400
@@ -42,17 +43,17 @@ def missile_respawn():
     return[triggered,missile_speed,position_missile_x,position_missile_y] 
 
 def crash():
-    global user_points
+    global lives_left
     if spaceship_rectangle.colliderect(alien_rectangle) :
-        user_points = user_points - 1
+        lives_left = lives_left - 1
         return True
     else:
         return False
 
 def hitting_alien():
-    global user_points
+    global points
     if missile_rectangle.colliderect(alien_rectangle):
-        user_points = user_points + 1 
+        points = points + 1 
         return True
     else:
         return False
@@ -86,8 +87,8 @@ while run:
     pygame.draw.rect(screen,"red",spaceship_rectangle,3)
     pygame.draw.rect(screen, "red", missile_rectangle,3 )
     pygame.draw.rect(screen, "red", alien_rectangle,3 )
-    score = font.render(f' Points: {int(user_points)}',True,"red")
-  
+    lives = font.render(f' Lives: {int(lives_left)}',True,"red")
+    score = font.render(f' Points: {int(points)}',True,"blue")
     key = pygame.key.get_pressed()
     if key[pygame.K_UP] and position_spaceship_y > -25:
         position_spaceship_y = position_spaceship_y - 1
@@ -109,15 +110,18 @@ while run:
     if position_alien_x <= -300: 
         position_alien_x = alien_respawn()[0]
         position_alien_y = alien_respawn()[1]
-        user_points = user_points - 1
-    if user_points == 0:
+        lives_left = lives_left - 1
+    if lives_left == 0:
         run = False
     
-    # if crash():
-    #     user_points = user_points - 1
+    if crash():
+        position_alien_x = alien_respawn()[0]
+        position_alien_y = alien_respawn()[1]
 
-    # if hitting_alien():
-    #     user_points = user_points + 1
+    if hitting_alien():
+        position_alien_x = alien_respawn()[0]
+        position_alien_y = alien_respawn()[1]
+        
     
     spaceship_rectangle.x = position_spaceship_x
     spaceship_rectangle.y = position_spaceship_y
@@ -129,7 +133,8 @@ while run:
     screen.blit(missile_image,(position_missile_x,position_missile_y))
     screen.blit(spaceship_image,(position_spaceship_x,position_spaceship_y))
     screen.blit(alien_image,(position_alien_x,position_alien_y))
-    screen.blit(score,(0,0))
+    screen.blit(lives,(0,0))
+    screen.blit(score,(0,75))
  
 
 
