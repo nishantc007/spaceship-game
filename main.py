@@ -1,10 +1,11 @@
 import pygame, random
 pygame.init()
+pygame.mixer.init()
 
 screen_width = 1280
 screen_height = 680
 screen = pygame.display.set_mode((screen_width,screen_height))
-background = pygame.image.load("night.png").convert_alpha()
+background = pygame.image.load("day.jpg").convert_alpha()
 background = pygame.transform.scale(background,(1280,680))
 spaceship_image = pygame.image.load("Spaceship-2.png").convert_alpha()
 spaceship_image = pygame.transform.scale(spaceship_image,(100,100))
@@ -54,7 +55,7 @@ def crash():
 def hitting_alien():
     global points
     if missile_rectangle.colliderect(alien_rectangle):
-        points = points + 4
+        points = points + 1
         return True
     else:
         return False
@@ -79,6 +80,11 @@ while main_menu_loop:
 alien_speed = 3
 level = 20
 level2 = 40
+
+soundtrack = pygame.mixer.Sound("soundtrack.ogg")
+pygame.mixer.Sound.set_volume(soundtrack,0.1)
+pygame.mixer.Sound.play(soundtrack)
+
 run = True
 while run:
     for event in pygame.event.get():
@@ -150,6 +156,7 @@ while run:
     if points == 40:
         speeding_up()
         points = 41
+        lives_left = 10
         
 
     spaceship_rectangle.x = position_spaceship_x
